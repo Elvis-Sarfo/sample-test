@@ -11,4 +11,7 @@ const extractCompanyData = async (pdfBuffer) => {
   }
 }
 
-module.exports = extractCompanyData
+module.exports = {
+  extractCompanyData,
+  
+}

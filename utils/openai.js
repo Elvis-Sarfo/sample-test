@@ -3,7 +3,7 @@ const OpenAI = require('openai');
 const promptGPT = async (prompt) => {
   try {
     const openai = new OpenAI({
-      apiKey: "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", // This is the default and can be omitted
+      apiKey: process.env.OPEN_AI_KEY,
     }); // Replace with your API key
 
     const msg = `Write a report on Farmasyst Company Limited using the template like below
