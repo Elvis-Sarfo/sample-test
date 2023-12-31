@@ -3,7 +3,7 @@ const nlp = require('compromise');
 const {
   openai,
   huggingface,
-  pdfReader,
+  pdfUtils,
   webScrapper,
   googleai
 } = require('../utils');
@@ -15,11 +15,14 @@ const getHomeHandler = (req, res) => {
 
 const postPDFHandler = async (req, res) => {
   try {
+    if (!req.file) return next(new Error('Select a file!'))
+    const filePath = '/uploads/' + req.file.filename;
     // Get PDF data
     const dataBuffer = req.file.buffer;
     // convert file blob
     const blob = new Blob([dataBuffer], {type: 'application/pdf'});
-    const pdfData = await pdfReader.extractCompanyData(dataBuffer);
+    const pdfData = await pdfUtils.extractTextData(dataBuffer);
+    const pdfImg = await pdfUtils.convertPDFToImage(dataBuffer, req.file.originalname);
     const templateURL = 'https://www.linkedin.com/advice/0/how-do-you-research-new-venture-capital-opportunity';
 
     const companyInfo = nlp(pdfData);

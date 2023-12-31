@@ -1,5 +1,5 @@
 var express = require('express');
-const { getHomeHandler, postPDFHandler} = require('../controllers');
+const { getHomeHandler, postPDFHandler } = require('../controllers');
 var router = express.Router();
 const Multer = require('multer')
 
@@ -8,6 +8,14 @@ const Multer = require('multer')
  */
 const multer = Multer({
   storage: Multer.memoryStorage(),
+  // storage: Multer.diskStorage({
+  //   destination: 'uploads/',
+  //   filename: function (req, file, cb) {
+  //     // this overwrites the default multer renaming callback
+  //     // and simply saves the file as it is
+  //     cb(null, file.originalname)
+  //   }
+  // }),
   limits: { fieldSize: 5 * 1024 * 1024 }
 })
 

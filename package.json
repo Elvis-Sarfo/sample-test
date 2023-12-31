@@ -11,6 +11,8 @@
   "dependencies": {
     "@google-ai/generativelanguage": "^2.0.0",
     "@huggingface/inference": "^2.6.4",
+    "@ironsoftware/ironpdf": "^2023.11.2",
+    "@ironsoftware/ironpdf-engine-macos-arm64": "^2023.11.2",
     "axios": "^1.6.3",
     "compromise": "^14.11.0",
     "cookie-parser": "~1.4.4",
