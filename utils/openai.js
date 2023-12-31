@@ -1,16 +1,16 @@
 const OpenAI = require('openai');
 
-const promptGPT = async (prompt) => {
+const generateReport = async (input) => {
   try {
     const openai = new OpenAI({
       apiKey: process.env.OPEN_AI_KEY,
     }); // Replace with your API key
 
-    const msg = `Write a report on Farmasyst Company Limited using the template like below
-    https://www.linkedin.com/advice/0/how-do-you-research-new-venture-capital-opportunity`
+    // const msg = `Write a report on Farmasyst Company Limited using the template like below
+    // https://www.linkedin.com/advice/0/how-do-you-research-new-venture-capital-opportunity`
 
     const response = await openai.chat.completions.create({
-      messages: [{ "role": "user", "content": msg }],
+      messages: [{ "role": "user", "content": input }],
       model: "gpt-3.5-turbo",
     });
 
@@ -22,4 +22,6 @@ const promptGPT = async (prompt) => {
   }
 }
 
-module.exports = promptGPT
+module.exports = {
+  generateReport
+}

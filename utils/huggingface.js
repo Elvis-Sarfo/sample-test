@@ -48,7 +48,10 @@ const readCompanyDataFromText = async (context) => {
         context: context
       }
     });
-    const response = `Company Name: ${companyNameRes.answer} AND Company Location: ${companyLocationRes.answer}`
+    const response = {
+      companyName: companyNameRes.answer,
+      companyLocation: companyLocationRes.answer
+    }
     console.log(companyNameRes);
     return response;
   } catch (error) {
