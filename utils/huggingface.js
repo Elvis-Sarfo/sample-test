@@ -1,7 +1,7 @@
 const {HfInference} = require('@huggingface/inference');
 const hfInference = new HfInference(process.env.HF_ACCESS_TOKEN);
 
-const generateReport = async (msg) => {
+const generateText = async (msg) => {
   try {
     const response = await hfInference.textGeneration({
       inputs: msg,
@@ -20,7 +20,7 @@ const readCompanyDataFromPDF = async (document) => {
     const response = await hfInference.documentQuestionAnswering({
       model: 'impira/layoutlm-document-qa',
       inputs: {
-        question: 'What is the organizationa name?',
+        question: 'What is the organization in the document?',
         image: document,
       }
     });
@@ -32,7 +32,34 @@ const readCompanyDataFromPDF = async (document) => {
   }
 }
 
+const readCompanyDataFromText = async (context) => {
+  try {
+    const companyNameRes = await hfInference.questionAnswering({
+      model: 'deepset/roberta-base-squad2',
+      inputs: {
+        question: 'What is the name of the organization the file belongs to?',
+        context: context
+      }
+    });
+    const companyLocationRes = await hfInference.questionAnswering({
+      model: 'deepset/roberta-base-squad2',
+      inputs: {
+        question: 'What is the Location of the organization the file belongs to?',
+        context: context
+      }
+    });
+    const response = `Company Name: ${companyNameRes.answer} AND Company Location: ${companyLocationRes.answer}`
+    console.log(companyNameRes);
+    return response;
+  } catch (error) {
+    console.error('Error parsing PDF:', error);
+    throw error;
+  }
+}
+
+
 module.exports = {
-  generateReport,
-  readCompanyDataFromPDF
+  generateText,
+  readCompanyDataFromPDF,
+  readCompanyDataFromText
 }
