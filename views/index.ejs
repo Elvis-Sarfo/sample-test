@@ -21,24 +21,69 @@
       </h1>
       <p>Upload a Compamny PDF to Generate Report</p>
       <form id="form" action="/" method="post">
-        <input type="file" name="file" id="file"  class="dropify" data-height="70">
+        <input type="file" name="file" id="file" accept="application/pdf" class="dropify" data-height="70">
         <input class="mt-2 mb-3 btn btn-primary" type="submit" value="Generate Report" name="submit">
       </form>
     </div>
-  
-    <div class="pt-2 text-justify" id="results"></div>
-  
+
+    <div class="pt-2" style="display: none;" id="loading">Please wait, loading company info...</div>
+
+    <div class="pt-2" style="display: none;" id="result">
+      <h1>Company Info:</h1>
+      <div><span class="fw-bold">Compamny Name: </span><span id="companyName"></span></div>
+      <div><span class="fw-bold">Industry: </span><span id="companyIndustry"></span></div>
+      <div><span class="fw-bold">Location: </span><span id="companyLoc"></span></div>
+      <div><span class="fw-bold">Compamny Description: </span><span id="companyDesc"></span></div>
+      <div><span class="fw-bold">Compamny Website: </span><span id="companyWeb"></span></div>
+
+      <h1>Company Report:</h1>
+      <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+          <button class="nav-link active" id="nav-gpt-tab" data-bs-toggle="tab" data-bs-target="#nav-gpt" type="button"
+            role="tab" aria-controls="nav-gpt" aria-selected="true">Openai GPT</button>
+          <button class="nav-link" id="nav-gemini-tab" data-bs-toggle="tab" data-bs-target="#nav-gemini" type="button"
+            role="tab" aria-controls="nav-gemini" aria-selected="false">Google Gemini</button>
+        </div>
+      </nav>
+      <div class="tab-content" id="nav-tabContent">
+        <div class="tab-pane fade show active" id="nav-gpt" role="tabpanel" aria-labelledby="nav-gpt-tab">
+          Generating Report, Please wait...
+        </div>
+        <div class="tab-pane fade" id="nav-gemini" role="tabpanel" aria-labelledby="nav-gemini-tab">
+          Generating Report, Please wait...
+        </div>
+      </div>
+    </div>
   </div>
-
-
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script type="text/javascript" src="https://jeremyfagis.github.io/dropify/dist/js/dropify.min.js"></script>
   <script>
     $('.dropify').dropify();
+
+    function getReport(_companyInfo) {
+      document.getElementById('nav-gpt').innerHTML = 'Generating Report, Please wait...';
+      document.getElementById('nav-gemini').innerHTML = 'Generating Report, Please wait...';
+
+      // Send post request with the fetch API
+      fetch('/report', {
+        method: 'post', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(_companyInfo)
+      }).then(async function (response) {
+        if (!response.ok) throw new Error('Server response wasn\'t OK');
+        const data = await response.json();
+        const report = data?.result;
+        // insert the generated html string into the DOM
+        document.getElementById('nav-gpt').innerHTML = report?.gptReport;
+        document.getElementById('nav-gemini').innerHTML = report?.geminiReport;
+
+      }).catch(function (error) {
+        console.log(error);
+      });
+    }
+
     window.onload = function () {
-      
       // Get form element
       var form = document.getElementById('form');
       // Add submit event listener on it
@@ -52,28 +97,34 @@
         // Add the file to the request.
         formData.append('file', file);
 
-        document.getElementById('results').innerHTML = 'Generating Report, Pleasr wait...';
+        document.getElementById('loading').style.display = 'block';
+        document.getElementById('result').style.display = 'none';
 
-        // Send post request with the fetch API
-        fetch('/', {
-          method: 'post',
-          body: formData
-        }).then(function (response) {
-          if (response.ok) {
-            return response.json();
-          } else {
-            throw new Error('Server response wasn\'t OK');
-          }
-        }).then(function (data) {
-          // console.log(data?.result);
+        fetch('/pdf', { method: 'post', body: formData }).then(async function (response) {
+          if (!response.ok) throw new Error('Server response wasn\'t OK');
+
+          const data = await response.json();
+          const companyInfo = data?.result;
+
           // insert the generated html string into the DOM
-          document.getElementById('results').innerHTML = data?.result;
+          document.getElementById('result').style.display = 'block';
+          document.getElementById('loading').style.display = 'none';
+
+          document.getElementById('companyName').innerHTML = companyInfo?.name ?? "N/A";
+          document.getElementById('companyIndustry').innerHTML = companyInfo?.industry ?? "N/A";
+          document.getElementById('companyLoc').innerHTML = companyInfo?.location ?? "N/A";
+          document.getElementById('companyDesc').innerHTML = companyInfo?.description ?? "N/A";
+          document.getElementById('companyWeb').innerHTML = companyInfo?.website ?? "N/A";
+
+          getReport(companyInfo)
+
         }).catch(function (error) {
           console.log(error);
-          
-        })
+        });
+
       });
     }
+
   </script>
 </body>
 

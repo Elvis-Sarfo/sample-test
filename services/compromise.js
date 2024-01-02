@@ -1,5 +1,11 @@
 const nlp = require('compromise');
 
+/**
+ * Reads company data from a PDF text with compromise nlp API.
+ * @param {string} pdfData - The PDF text data.
+ * @returns {string} - The formatted company information.
+ * @throws {Error} - If there is an error parsing the PDF.
+ */
 const readCompanyDataFromText = async (pdfData) => {
   try {
     const companyInfo = nlp(pdfData);

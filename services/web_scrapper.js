@@ -14,6 +14,12 @@ function extractRelevantData(pageContent) {
   return extractedData;
 }
 
+/**
+ * Scrapes data from Google search based on the provided search term.
+ * @param {string} searchTerm - The term to search on Google.
+ * @returns {Promise<Object>} - A promise that resolves to an object containing the scraped data.
+ * @throws {Error} - If there is an error during the online research.
+ */
 const scrapeDataFromGoogleSearch = async (searchTerm) => {
   const onlineData = {};
   // Use Puppeteer to automate web searches, navigate websites,
