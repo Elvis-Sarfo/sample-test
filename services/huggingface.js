@@ -46,7 +46,7 @@ const readCompanyDataFromPDF = async (document) => {
 /**
  * Reads company data from text using Hugging Face question answering model.
  * @param {string} context - The text context to extract company data from.
- * @returns {Promise<{ companyName: string, companyLocation: string }>} - The extracted company data, including the company name and location.
+ * @returns {Promise<{ companyName: string, location: string }>} - The extracted company data, including the company name and location.
  * @throws {Error} - If there is an error parsing the PDF or executing the Hugging Face model.
  */
 const readCompanyDataFromText = async (context) => {
@@ -65,9 +65,10 @@ const readCompanyDataFromText = async (context) => {
         context: context
       }
     });
+    if (companyNameRes.score < 0.5) throw "Score is too low"
     const response = {
-      companyName: companyNameRes.answer,
-      companyLocation: companyLocationRes.answer
+      name: companyNameRes.answer,
+      location: companyLocationRes.answer
     }
     return response;
   } catch (error) {

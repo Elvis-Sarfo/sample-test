@@ -73,22 +73,34 @@ const getCompanyInfo = async (imgFile) => {
     Get the industry of the company from the image. 
     Get the website of the company from the image. 
     Get the description of the company from the image including the name, location, industry, website, and any other information.
-    Structure the information in a json string as follows:
-    {
-    name: <name>,
-    location: <location>,
-    industry: <industry>,
-    website: <website>,
-    description: <description>
-    }
+    Structure the information into a JSON string with the following format:
+    '{"name": <name>,"location": <location>,"industry": <industry>,"website": <website>,"description": <description>}'
+    Dont append or prepend any other string.
+
+    The following are examples you should follow
+    Wrong Answer:
+    \`\`\`json {
+    name: "Google",
+    location: "Mountain View, CA",
+    industry: "Technology",
+    website: "https://www.google.com/",
+    description: "Google LLC is an American multinational technology company that specializes in Internet-related services and products, which include online advertising technologies, a search engine, cloud computing, software, and hardware."
+    }\`\`\`'
+
+    Wrong Answer:
+    {name: "Google",location: "Mountain View, CA",industry: "Technology",website: "https://www.google.com/",description: "Google LLC is an American multinational technology company that specializes in Internet-related services and products, which include online advertising technologies, a search engine, cloud computing, software, and hardware."}
+
+    Correct Answer:
+    {"name": "Google","location": "Mountain View, CA","industry": "Technology","website": "https://www.google.com/","description": "Google LLC is an American multinational technology company that specializes in Internet-related services and products, which include online advertising technologies, a search engine, cloud computing, software, and hardware."}
+
     `
 
     const result = await model.generateContent([prompt, imagePart]);
     const response = await result.response;
-    const text = response.text();
-
+    let text = response.text();
+    text = text.replaceAll('```', '');
+    text = text.replace('json', '');
     return JSON.parse(text);
-
   } catch (error) {
     console.error('Error parsing PDF:', error);
     throw error;

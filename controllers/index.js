@@ -9,7 +9,7 @@ const {
   compromise
 } = require('../services');
 
-const {generateCompanyReport, readAndGenerateCompanyReport} = require('../utils');
+const { generateCompanyReport, readAndGenerateCompanyReport } = require('../utils');
 
 /**
  * Handles GET request to home page
@@ -18,7 +18,7 @@ const {generateCompanyReport, readAndGenerateCompanyReport} = require('../utils'
  * @param {*} res 
  */
 const getHomeHandler = (req, res) => {
-  res.render('index.ejs', { title: 'Sample Test' });
+  res.render('index.ejs', { title: 'Sample Test: Company Report Generator' });
 }
 
 /**
@@ -47,7 +47,7 @@ const companyReportHandler = async (req, res) => {
     ]);
 
     // Respond with report
-    res.json({ result: {gptReport, geminiReport} });
+    res.json({ result: { gptReport, geminiReport } });
   } catch (error) {
     res.status(500).json({ result: error.message });
   }
@@ -70,8 +70,19 @@ const pdfAPIHandler = async (req, res) => {
     // Convert PDF to image
     const pdfImg = await pdfUtils.convertPDFToImage(dataBuffer, req.file.originalname);
 
-    // Extract text data from PDF
-    const company = await googleai.getCompanyInfo(pdfImg);
+    let company;
+
+    try {
+      // Extract text data from PDF
+      company = await googleai.getCompanyInfo(pdfImg)
+    } catch (error) {
+      const pdfData = await pdfUtils.extractTextData(dataBuffer);
+      try {
+        company = await huggingface.readCompanyDataFromText(pdfData);
+      } catch (error) {
+        company = await compromise.readCompanyDataFromText(pdfData)
+      }
+    }
 
     // Respond with report
     res.json({ result: company })

@@ -17,11 +17,10 @@ const readCompanyDataFromText = async (pdfData) => {
     const companyPlaces = companyInfo.places().out('text');
     const companyTopics = companyInfo.topics().out('text');
 
-    return `Company Name: ${companyName} \n
-    Company Email: ${companyEmail} \n
-    Company Website: ${companyWebsite} \n
-    Company Places: ${companyPlaces} \n
-    `;
+    return {
+      name: companyName,
+      location: companyPlaces,
+    };
   } catch (error) {
     console.error('Error parsing PDF:', error);
     throw error;
